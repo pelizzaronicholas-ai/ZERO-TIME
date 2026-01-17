@@ -1,150 +1,97 @@
-# 🔧 ZERO TIME - VERSIONE DEBUG
+# ⚠️ PAGINA NON SI APRE - GUIDA RISOLUZIONE
 
-## ⚠️ COSA HO MODIFICATO
+## 🔍 CAUSE POSSIBILI
 
-Ho creato una **versione DEBUG** della PWA che:
-
-✅ **Mostra TUTTI i dispositivi Bluetooth** (non solo quelli che iniziano con "ZERO")
-✅ **Log dettagliati visibili nell'app** (non solo nella console)
-✅ **Più informazioni su ogni step della connessione**
+1. **Deploy in corso** (normale, ci vogliono 1-2 minuti)
+2. **Cache del browser/Bluefy** (molto probabile)
+3. **Errore nel deploy** (raro)
 
 ---
 
-## 🚀 COME USARLA
+## ✅ SOLUZIONE 1: ASPETTA + PULISCI CACHE (PIÙ PROBABILE)
 
-### METODO 1: Sostituisci index.html su GitHub
+### Passo 1: Verifica stato deploy
+1. Vai su GitHub → `ZERO-TIME`
+2. **Settings** → **Pages**
+3. In alto vedi:
+   - 🟡 "being built" → **Aspetta ancora 2 minuti**
+   - ✅ "is live at..." → **Deploy OK, è la cache!**
 
-1. Vai sul repository GitHub: `ZERO-TIME`
-2. Click sul file `index.html`
-3. Click sull'icona matita ✏️ (Edit)
-4. **Cancella tutto** il contenuto
-5. Apri il file `index_DEBUG.html` che ti ho fornito
-6. **Copia tutto** il contenuto
-7. **Incollalo** nell'editor di GitHub
-8. Scroll in fondo → **Commit changes**
-9. Attendi 1-2 minuti
-10. Riapri l'app su Bluefy
+### Passo 2: Pulisci cache Bluefy
+1. **Chiudi completamente Bluefy** (swipe up per chiudere, non solo uscire)
+2. **Riapri Bluefy**
+3. Inserisci l'URL: `https://pelizzaronicholas-ai.github.io/ZERO-TIME/`
+4. Prova ad aprire
 
-### METODO 2: Usa il file localmente
-
-Se vuoi testare subito:
-1. Apri `index_DEBUG.html` in un browser sul PC
-2. Deve essere HTTPS (usa live server o simili)
-3. Prova a connetterti
+### Passo 3: Se ancora non funziona - Force refresh
+In Bluefy:
+1. Tieni premuto sull'icona **refresh** ⟳
+2. Oppure cancella cache da Settings Bluefy
 
 ---
 
-## 🔍 COSA FARE QUANDO APRI L'APP
+## ✅ SOLUZIONE 2: VERIFICA ERRORI DEPLOY
 
-1. **Click su "Connetti Bluetooth (DEBUG MODE)"**
+### Controlla tab Actions
+1. GitHub → repository `ZERO-TIME`
+2. Click tab **"Actions"** (in alto)
+3. Vedi il primo workflow:
+   - ✅ Verde = tutto OK
+   - ❌ Rosso = c'è un errore
 
-2. **Vedrai la lista di TUTTI i dispositivi BLE** nelle vicinanze
-
-3. **Cerca "ZERO TIME"** nella lista
-
-4. **Se NON appare "ZERO TIME":**
-   - Il dispositivo è spento
-   - Il codice BLE non sta funzionando
-   - Il nome è diverso da "ZERO TIME"
-
-5. **Se appare "ZERO TIME":**
-   - Selezionalo
-   - Guarda il **LOG DEBUG** che appare sotto il pulsante
-   - Il log ti dirà esattamente dove fallisce la connessione
+Se è ROSSO:
+- Click sul workflow rosso
+- Leggi l'errore
+- Mandami screenshot
 
 ---
 
-## 🎯 POSSIBILI PROBLEMI E SOLUZIONI
+## 🔄 SOLUZIONE 3: ROLLBACK (SE TUTTO FALLISCE)
 
-### 📱 "ZERO TIME" NON appare nella lista
-**→ Problema hardware/firmware**
-- Verifica che lo XIAO sia acceso
-- Verifica che il codice BLE faccia advertising
-- Usa un'app tipo "LightBlue" per vedere se appare lì
+Se proprio non funziona, torna alla versione precedente:
 
-### 📱 "ZERO TIME" appare ma errore "Service not found"
-**→ Service UUID sbagliato**
-- Il Service UUID nel codice Arduino è diverso da:
-  `12345678-1234-5678-1234-56789abcdef0`
-- Devi modificare l'UUID nell'app o nel firmware
+### Metodo A - Via interfaccia GitHub:
+1. Repository `ZERO-TIME` → `index.html`
+2. Click su **"History"** (icona orologio, in alto a destra del file)
+3. Vedrai 2 commit:
+   - Il più recente (con debug)
+   - Il precedente (quello che funzionava)
+4. Click sul commit **precedente**
+5. Click sui **3 puntini** ⋮ a destra
+6. **"View file"**
+7. Pulsante **"Raw"** in alto a destra
+8. **Copia tutto** il contenuto (Ctrl+A, Ctrl+C)
+9. Torna su `index.html` → **Matita** ✏️
+10. **Cancella tutto** e **incolla** il vecchio contenuto
+11. **Commit changes**
+12. Attendi 2 minuti
 
-### 📱 Connessione OK ma errore "Characteristic not found"
-**→ Characteristic UUID sbagliato**
-- Le Characteristic UUID nel codice Arduino sono diverse da:
-  - WRITE: `12345678-1234-5678-1234-56789abcdef1`
-  - NOTIFY: `12345678-1234-5678-1234-56789abcdef2`
-
-### 📱 Tutto funziona ma non riceve comandi
-**→ Problema nel parsing dei comandi**
-- Il firmware non sta processando correttamente i comandi
-- Verifica il codice Arduino che gestisce `SET_BRIGHTNESS` ecc.
-
----
-
-## 📋 LOG DEBUG - COSA SIGNIFICANO
-
-```
-🔍 Ricerca dispositivo Bluetooth...
-   → Apertura finestra selezione BLE
-
-📱 Dispositivo selezionato: ZERO TIME
-   → Hai selezionato il dispositivo dalla lista
-
-🔌 Connessione in corso...
-   → Tentativo di connessione GATT
-
-✅ Server GATT connesso
-   → Connessione GATT riuscita
-
-🔍 Ricerca Service UUID: 1234...
-   → Cerca il Service con quell'UUID
-
-✅ Service trovato!
-   → Service trovato correttamente
-
-🔍 Ricerca caratteristica WRITE...
-✅ Caratteristica WRITE trovata
-   → Caratteristica per inviare comandi trovata
-
-🔍 Ricerca caratteristica NOTIFY...
-✅ Caratteristica NOTIFY trovata
-   → Caratteristica per ricevere notifiche trovata
-
-✅✅✅ CONNESSIONE STABILITA CON SUCCESSO!
-   → Tutto OK! Puoi usare l'app
-```
+### Metodo B - Con il file che ti fornisco:
+Uso il file `index_ORIGINALE_GITHUB.html` che ti mando:
+1. Aprilo
+2. Copia tutto
+3. GitHub → `index.html` → Matita ✏️
+4. Cancella tutto e incolla
+5. Commit
 
 ---
 
-## 🆘 SE IL LOG SI FERMA A...
+## 📱 SE ANCORA NON FUNZIONA
 
-**"Server GATT connesso" poi errore**
-→ Il Service UUID è sbagliato
-
-**"Service trovato!" poi errore**
-→ Le Characteristic UUID sono sbagliate
-
-**"Ricerca dispositivo..." e non si apre nulla**
-→ Problema permessi Bluetooth
+Prova ad aprire su PC prima:
+1. Apri su PC/Mac con Chrome: `https://pelizzaronicholas-ai.github.io/ZERO-TIME/`
+2. Funziona sul PC?
+   - ✅ SI → problema Bluefy, reinstalla Bluefy
+   - ❌ NO → problema deploy, mandami screenshot GitHub Pages
 
 ---
 
-## 📸 COSA MANDARE
+## 🎯 PROBABILITÀ
 
-Dopo aver provato, mandami:
-
-1. **Screenshot della lista dispositivi BLE** (quando click su "Connetti")
-2. **Screenshot del LOG DEBUG** (l'area nera con i messaggi)
-3. **Dimmi esattamente dove si ferma** il processo
-
-Così posso capire esattamente il problema!
+**80%** → Cache di Bluefy (aspetta 2 min + chiudi/riapri Bluefy)
+**15%** → Deploy in corso (aspetta 2 minuti)
+**5%** → Errore deploy (verifica Actions)
 
 ---
 
-## 🔄 TORNARE ALLA VERSIONE NORMALE
-
-Quando avremo risolto, potrai sostituire di nuovo con l'`index.html` originale (senza debug).
-
----
-
-**Sostituisci l'index.html su GitHub con questa versione DEBUG e dimmi cosa vedi!** 🔍
+**Inizia dalla SOLUZIONE 1, è la più probabile!** 👍
