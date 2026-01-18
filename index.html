@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#00ff88">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ZERO TIME">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <title>ZERO TIME Config</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #2a2a2a;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #444;
+        }
+        
+        .header h1 {
+            color: #00ff88;
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0,255,136,0.5);
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .status.disconnected {
+            background: #ff4444;
+            color: white;
+        }
+        
+        .status.connected {
+            background: #00ff88;
+            color: #1a1a1a;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .btn-primary {
+            background: #00ff88;
+            color: #1a1a1a;
+        }
+        
+        .btn-primary:hover {
+            background: #00dd77;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,255,136,0.4);
+        }
+        
+        .btn-primary:disabled {
+            background: #555;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .settings-group {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #333;
+            border-radius: 10px;
+            border-left: 4px solid #00ff88;
+        }
+        
+        .settings-group h3 {
+            color: #00ff88;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .setting-item {
+            margin-bottom: 15px;
+        }
+        
+        .setting-item label {
+            display: block;
+            margin-bottom: 8px;
+            color: #bbb;
+            font-size: 0.95em;
+        }
+        
+        .setting-item input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #555;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .setting-item input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00ff88;
+            cursor: pointer;
+        }
+        
+        .setting-item input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00ff88;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .value-display {
+            display: inline-block;
+            float: right;
+            background: #00ff88;
+            color: #1a1a1a;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #555;
+            transition: .4s;
+            border-radius: 30px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #00ff88;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+        
+        .info-box {
+            background: #1a3a2a;
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #aaa;
+        }
+        
+        .info-box strong {
+            color: #00ff88;
+        }
+
+        .install-prompt {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+            color: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+        }
+
+        .install-prompt.show {
+            display: block;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #444;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 12px 10px;
+            background: #2a2a2a;
+            color: #888;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: #333;
+            color: #00ff88;
+        }
+
+        .tab-btn.active {
+            color: #00ff88;
+            border-bottom-color: #00ff88;
+            background: #1a3a2a;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="installPrompt" class="install-prompt">
+        📲 Installa l'app sulla home screen!
+    </div>
+
+    <div class="container">
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-btn active" data-tab="config">⏱️ Timer</button>
+            <button class="tab-btn" data-tab="ballistic">🎯 Balistica</button>
+            <button class="tab-btn" data-tab="rangecard">📝 Range Card</button>
+            <button class="tab-btn" data-tab="saved">📚 Salvati</button>
+        </div>
+
+        <!-- TAB 1: Timer Config (esistente) -->
+        <div class="tab-content active" id="tab-config">
+            <div class="header">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+                    <img src="icon-192.png" alt="ZERO TIME" style="width: 50px; height: 50px; border-radius: 10px;">
+                    <h1>⏱️ ZERO TIME</h1>
+                </div>
+                <div id="status" class="status disconnected">DISCONNESSO</div>
+            </div>
+            
+            <button id="connectBtn" class="btn btn-primary">🔗 Connetti Bluetooth</button>
+            
+            <!-- Info dispositivo connesso -->
+            <div id="deviceInfo" style="display: none; background: #333; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div>
+                        <strong style="color: #00ff88;">Dispositivo:</strong>
+                        <div id="deviceNameDisplay" style="font-size: 1.1em; margin-top: 5px;">ZEROTIME</div>
+                    </div>
+                    <button id="disconnectBtn" class="btn btn-primary" style="padding: 8px 15px; font-size: 0.9em; background: #ff4444;">🔌 Disconnetti</button>
+                </div>
+                <button id="renameBtn" class="btn btn-primary" style="background: #ff8800; margin-top: 10px;">✏️ Rinomina Dispositivo</button>
+            </div>
+            
+            <div id="settings" style="display: none;">
+            <!-- Calibrazione Sensibilità -->
+            <div class="settings-group">
+                <h3>🎤 Calibrazione Audio</h3>
+                
+                <div class="setting-item">
+                    <label>
+                        Soglia START (beep)
+                        <span class="value-display" id="beepValue">8000</span>
+                    </label>
+                    <input type="range" id="beepThreshold" min="3000" max="20000" step="100" value="8000">
+                </div>
+                
+                <div class="setting-item">
+                    <label>
+                        Soglia HIT (colpo)
+                        <span class="value-display" id="shotValue">12000</span>
+                    </label>
+                    <input type="range" id="shotThreshold" min="5000" max="30000" step="100" value="12000">
+                </div>
+            </div>
+            
+            <!-- Timer -->
+            <div class="settings-group">
+                <h3>⏰ Timer</h3>
+                
+                <div class="setting-item">
+                    <label>
+                        Durata (secondi)
+                        <span class="value-display" id="timerValue">60</span>
+                    </label>
+                    <input type="range" id="timerSeconds" min="5" max="300" step="5" value="60">
+                </div>
+            </div>
+            
+            <!-- Funzioni ON/OFF -->
+            <div class="settings-group">
+                <h3>⚙️ Funzioni</h3>
+                
+                <div class="setting-item">
+                    <label style="display: inline-block;">
+                        Microfono
+                    </label>
+                    <label class="toggle" style="float: right;">
+                        <input type="checkbox" id="micEnabled" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <div style="clear: both;"></div>
+                </div>
+                
+                <div class="setting-item">
+                    <label style="display: inline-block;">
+                        Bluetooth
+                    </label>
+                    <label class="toggle" style="float: right;">
+                        <input type="checkbox" id="btEnabled" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <div style="clear: both;"></div>
+                </div>
+            </div>
+            
+            <!-- Luminosità Display -->
+            <div class="settings-group">
+                <h3>💡 Luminosità Display</h3>
+                
+                <div class="setting-item">
+                    <label>
+                        Livello attuale
+                        <span class="value-display" id="brightnessLabel">3</span>
+                    </label>
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px;">
+                        <button class="brightness-btn" data-level="1" onclick="setBrightness(1)" style="padding: 12px 8px; border: 2px solid #555; background: #2a2a2a; color: #e0e0e0; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; font-size: 0.9em; text-align: center;">
+                            1<br><span style="font-size: 0.7em; color: #888;">Molto<br>bassa</span>
+                        </button>
+                        <button class="brightness-btn" data-level="2" onclick="setBrightness(2)" style="padding: 12px 8px; border: 2px solid #555; background: #2a2a2a; color: #e0e0e0; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; font-size: 0.9em; text-align: center;">
+                            2<br><span style="font-size: 0.7em; color: #888;">Bassa</span>
+                        </button>
+                        <button class="brightness-btn active" data-level="3" onclick="setBrightness(3)" style="padding: 12px 8px; border: 2px solid #00ff88; background: #00ff88; color: #1a1a1a; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; font-size: 0.9em; text-align: center;">
+                            3<br><span style="font-size: 0.7em;">Media</span>
+                        </button>
+                        <button class="brightness-btn" data-level="4" onclick="setBrightness(4)" style="padding: 12px 8px; border: 2px solid #555; background: #2a2a2a; color: #e0e0e0; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; font-size: 0.9em; text-align: center;">
+                            4<br><span style="font-size: 0.7em; color: #888;">Alta</span>
+                        </button>
+                        <button class="brightness-btn" data-level="5" onclick="setBrightness(5)" style="padding: 12px 8px; border: 2px solid #555; background: #2a2a2a; color: #e0e0e0; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; font-size: 0.9em; text-align: center;">
+                            5<br><span style="font-size: 0.7em; color: #888;">Molto<br>alta</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bolla Livella -->
+            <div class="settings-group">
+                <h3>📐 Bolla Livella</h3>
+                
+                <div class="setting-item">
+                    <label>
+                        Offset Zero
+                        <span class="value-display" id="offsetValue">0.00</span>
+                    </label>
+                    <input type="range" id="axOffset" min="-1.0" max="1.0" step="0.01" value="0.0">
+                </div>
+                
+                <button id="resetOffset" class="btn btn-primary" style="margin-top: 10px;">
+                    🎯 Reset Zero
+                </button>
+            </div>
+            
+            <!-- Azioni -->
+            <div class="settings-group">
+                <h3>🔧 Azioni</h3>
+                
+                <button id="saveBtn" class="btn btn-primary">
+                    💾 Salva Configurazione
+                </button>
+                
+                <button id="factoryBtn" class="btn btn-primary" style="background: #ff4444;">
+                    ⚠️ Factory Reset
+                </button>
+            </div>
+            
+            <div class="info-box">
+                <strong>⚠️ IMPORTANTE:</strong><br>
+                Ricordarsi di premere due volte il tasto avvio per ricevere le modifiche.
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px; padding: 30px 20px; border-top: 2px solid #444; background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);">
+                <p style="color: #00ff88; font-weight: bold; font-size: 1.2em; margin-bottom: 15px; letter-spacing: 2px;">
+                    BY
+                </p>
+                <img src="shooting-labs-logo.png" alt="Shooting Labs" style="width: 120px; height: auto; margin: 15px auto; display: block;">
+                <a href="http://shooting-labs.com" target="_blank" style="color: #00ff88; text-decoration: none; font-size: 1em; font-weight: 500; border: 1px solid #00ff88; padding: 8px 20px; border-radius: 20px; display: inline-block; margin-top: 10px; transition: all 0.3s;">
+                    shooting-labs.com
+                </a>
+            </div>
+        </div>
+        </div><!-- Fine tab-config -->
+
+        <!-- TAB 2: Calcolatore Balistico -->
+        <div class="tab-content" id="tab-ballistic">
+            <h2 style="color: #00ff88; text-align: center; margin-bottom: 20px;">🎯 Calcolatore Balistico</h2>
+            
+            <!-- Selettore Profilo -->
+            <div class="settings-group">
+                <h3>Profilo Arma</h3>
+                <select id="profileSelect" style="width: 100%; padding: 10px; background: #1a1a1a; color: #00ff88; border: 1px solid #00ff88; border-radius: 5px; font-size: 1em;">
+                    <option value="">+ Nuovo Profilo</option>
+                </select>
+                <button id="newProfileBtn" class="btn btn-primary" style="margin-top: 10px;">➕ Crea Nuovo Profilo</button>
+            </div>
+
+            <!-- Editor Profilo -->
+            <div id="profileEditor" style="display: none;">
+                <div class="settings-group">
+                    <h3>Dati Profilo</h3>
+                    <div class="setting-item">
+                        <label>Nome Profilo</label>
+                        <input type="text" id="profileName" placeholder="es. Tikka .308 Win 175gr" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 5px;">
+                    </div>
+                    <div class="setting-item">
+                        <label>Unità di Misura</label>
+                        <select id="profileUnit" style="width: 100%; padding: 10px; background: #1a1a1a; color: #00ff88; border: 1px solid #00ff88; border-radius: 5px;">
+                            <option value="MIL">MIL</option>
+                            <option value="MOA">MOA</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Click Verificati -->
+                <div class="settings-group">
+                    <h3>Click Verificati (min 3, max 20)</h3>
+                    <div id="clickList"></div>
+                    <button id="addClickBtn" class="btn btn-primary" style="margin-top: 10px;">➕ Aggiungi Click</button>
+                </div>
+
+                <!-- Salva Profilo -->
+                <button id="saveProfileBtn" class="btn btn-primary" style="background: #00ff88;">💾 Salva Profilo</button>
+                <button id="deleteProfileBtn" class="btn btn-primary" style="background: #ff4444; margin-top: 10px;">🗑️ Elimina Profilo</button>
+            </div>
+
+            <!-- Calcolatore Rapido -->
+            <div class="settings-group">
+                <h3>Calcolo Rapido</h3>
+                <div class="setting-item">
+                    <label>Distanza Target (m)</label>
+                    <input type="number" id="targetDistance" placeholder="150" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 5px;">
+                </div>
+                <button id="calculateBtn" class="btn btn-primary">🎯 Calcola Click</button>
+                
+                <div id="calcResult" style="display: none; margin-top: 20px; padding: 20px; background: #1a3a2a; border: 2px solid #00ff88; border-radius: 10px; text-align: center;">
+                    <p style="font-size: 1.2em; color: #00ff88; margin-bottom: 10px;">Correzioni Calcolate:</p>
+                    <p style="font-size: 2em; font-weight: bold; color: #00ff88; margin: 10px 0;">
+                        <span id="resultU">-</span> <span id="resultUnit">MIL</span>
+                    </p>
+                    <p style="font-size: 0.9em; color: #aaa;">Alzo (U)</p>
+                </div>
+            </div>
+        </div><!-- Fine tab-ballistic -->
+
+        <!-- TAB 3: Range Card Builder -->
+        <div class="tab-content" id="tab-rangecard">
+            <h2 style="color: #00ff88; text-align: center; margin-bottom: 20px;">📝 Range Card Builder</h2>
+            
+            <div class="settings-group">
+                <h3>Nuovo Esercizio</h3>
+                <div class="setting-item">
+                    <label>Nome Esercizio</label>
+                    <input type="text" id="drillName" placeholder="es. PRS Drill Base" style="width: 100%; padding: 10px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 5px;">
+                </div>
+                <div class="setting-item">
+                    <label>Seleziona Profilo Balistico</label>
+                    <select id="drillProfile" style="width: 100%; padding: 10px; background: #1a1a1a; color: #00ff88; border: 1px solid #00ff88; border-radius: 5px;">
+                        <option value="">Nessun profilo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3>Posizioni</h3>
+                <div id="positionsList"></div>
+                <button id="addPositionBtn" class="btn btn-primary">➕ Aggiungi Posizione</button>
+            </div>
+
+            <button id="saveDrillBtn" class="btn btn-primary" style="background: #00ff88;">💾 Salva Esercizio</button>
+            <button id="previewDrillBtn" class="btn btn-primary" style="background: #ff8800; margin-top: 10px;">👁️ Anteprima Range Card</button>
+        </div><!-- Fine tab-rangecard -->
+
+        <!-- TAB 4: Esercizi Salvati -->
+        <div class="tab-content" id="tab-saved">
+            <h2 style="color: #00ff88; text-align: center; margin-bottom: 20px;">📚 Esercizi Salvati</h2>
+            
+            <div id="savedDrillsList" class="settings-group">
+                <p style="text-align: center; color: #888;">Nessun esercizio salvato</p>
+            </div>
+
+            <div class="settings-group">
+                <h3>🔧 Backup & Restore</h3>
+                <button id="exportBackupBtn" class="btn btn-primary">📤 Esporta Configurazione</button>
+                <button id="importBackupBtn" class="btn btn-primary" style="margin-top: 10px;">📥 Importa Configurazione</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;">
+            </div>
+        </div><!-- Fine tab-saved -->
+
+    </div><!-- Fine container -->
+
+    <script>
+        // Registra Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(reg => console.log('Service Worker registrato'))
+                .catch(err => console.log('Errore SW:', err));
+        }
+
+        // Gestione installazione PWA
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installPrompt.classList.add('show');
+        });
+
+        installPrompt.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log('Install outcome:', outcome);
+                deferredPrompt = null;
+                installPrompt.classList.remove('show');
+            }
+        });
+
+        let device = null;
+        let characteristic = null;
+        
+        const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+        const CHAR_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+        
+        // Elementi DOM
+        const connectBtn = document.getElementById('connectBtn');
+        const statusEl = document.getElementById('status');
+        const settingsDiv = document.getElementById('settings');
+        
+        // Range inputs
+        const beepThreshold = document.getElementById('beepThreshold');
+        const shotThreshold = document.getElementById('shotThreshold');
+        const timerSeconds = document.getElementById('timerSeconds');
+        const axOffset = document.getElementById('axOffset');
+        
+        // Toggle switches
+        const micEnabled = document.getElementById('micEnabled');
+        const btEnabled = document.getElementById('btEnabled');
+        
+        // Buttons
+        const saveBtn = document.getElementById('saveBtn');
+        const factoryBtn = document.getElementById('factoryBtn');
+        const resetOffset = document.getElementById('resetOffset');
+        
+        // Controlla compatibilità browser
+        window.addEventListener('load', () => {
+            if (!navigator.bluetooth) {
+                const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                
+                let msg = '⚠️ Web Bluetooth non supportato!\n\n';
+                
+                if (isSafari || isIOS) {
+                    msg += 'Su Safari/iOS usa:\n';
+                    msg += '1. App "Bluefy" (App Store)\n';
+                    msg += '2. Oppure usa Chrome/Edge su Android/PC\n\n';
+                    msg += 'Vuoi aprire l\'App Store?';
+                    
+                    if (confirm(msg)) {
+                        window.location.href = 'https://apps.apple.com/app/bluefy-web-ble-browser/id1492822055';
+                    }
+                } else {
+                    msg += 'Usa Chrome, Edge o Opera.';
+                    alert(msg);
+                }
+                
+                connectBtn.disabled = true;
+                connectBtn.textContent = '❌ Browser non compatibile';
+                connectBtn.style.background = '#ff4444';
+            }
+        });
+        
+        // Update value displays
+        beepThreshold.oninput = () => {
+            document.getElementById('beepValue').textContent = beepThreshold.value;
+        };
+        
+        shotThreshold.oninput = () => {
+            document.getElementById('shotValue').textContent = shotThreshold.value;
+        };
+        
+        timerSeconds.oninput = () => {
+            document.getElementById('timerValue').textContent = timerSeconds.value;
+        };
+        
+        axOffset.oninput = () => {
+            document.getElementById('offsetValue').textContent = parseFloat(axOffset.value).toFixed(2);
+        };
+        
+        // ==========================================
+        // GESTIONE DISPOSITIVI & PAIRING
+        // ==========================================
+        
+        let savedDevices = JSON.parse(localStorage.getItem('zt_saved_devices') || '[]');
+        let currentDeviceId = null;
+        
+        function saveDevice(deviceId, deviceName, customName = null) {
+            const existing = savedDevices.find(d => d.id === deviceId);
+            if (existing) {
+                existing.name = deviceName;
+                if (customName) existing.customName = customName;
+            } else {
+                savedDevices.push({
+                    id: deviceId,
+                    name: deviceName,
+                    customName: customName || deviceName,
+                    lastConnected: new Date().toISOString()
+                });
+            }
+            localStorage.setItem('zt_saved_devices', JSON.stringify(savedDevices));
+        }
+        
+        function getDeviceCustomName(deviceId) {
+            const saved = savedDevices.find(d => d.id === deviceId);
+            return saved ? saved.customName : null;
+        }
+        
+        // Connessione Bluetooth
+        connectBtn.onclick = async () => {
+            try {
+                // Cerca dispositivi che hanno il Nordic UART Service
+                device = await navigator.bluetooth.requestDevice({
+                    filters: [{ services: [SERVICE_UUID] }],
+                    optionalServices: [SERVICE_UUID]
+                });
+                
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService(SERVICE_UUID);
+                characteristic = await service.getCharacteristic(CHAR_UUID);
+                
+                // Salva dispositivo connesso
+                currentDeviceId = device.id;
+                const customName = getDeviceCustomName(device.id);
+                saveDevice(device.id, device.name, customName);
+                
+                // Aggiorna UI
+                const displayName = customName || device.name;
+                statusEl.textContent = 'CONNESSO';
+                statusEl.className = 'status connected';
+                connectBtn.style.display = 'none';
+                document.getElementById('deviceInfo').style.display = 'block';
+                document.getElementById('deviceNameDisplay').textContent = displayName;
+                settingsDiv.style.display = 'block';
+                
+                // Richiedi configurazione attuale
+                await sendCommand('GET_CONFIG');
+                
+            } catch (error) {
+                console.error('Errore connessione:', error);
+                alert('Errore di connessione: ' + error);
+            }
+        };
+        
+        // Invia comando via BLE
+        async function sendCommand(cmd, value = '') {
+            if (!characteristic) return;
+            
+            // Formato standard: COMANDO:VALORE o solo COMANDO
+            let data = cmd + (value ? ':' + value : '');
+            
+            const encoder = new TextEncoder();
+            await characteristic.writeValue(encoder.encode(data));
+            console.log('Comando inviato:', data);
+        }
+        
+        // ==========================================
+        // RENAME DISPOSITIVO
+        // ==========================================
+        
+        document.getElementById('renameBtn').onclick = async () => {
+            if (!device || !currentDeviceId) {
+                alert('⚠️ Nessun dispositivo connesso!');
+                return;
+            }
+            
+            const currentName = getDeviceCustomName(currentDeviceId) || device.name;
+            const newName = prompt('Nome personalizzato per questo dispositivo:', currentName);
+            
+            if (newName && newName.trim()) {
+                const cleanName = newName.trim().replace(/ /g, '_'); // Sostituisci spazi con underscore
+                
+                try {
+                    // Invia comando al dispositivo
+                    await sendCommand('SET_NAME', cleanName);
+                    
+                    // Salva localmente
+                    saveDevice(currentDeviceId, device.name, newName.trim());
+                    
+                    // Aggiorna UI
+                    document.getElementById('deviceNameDisplay').textContent = newName.trim();
+                    
+                    alert('✅ Dispositivo rinominato!\n\nNuovo nome: ' + newName.trim() + '\n\nIl nome è stato salvato sia sul dispositivo che sull\'app.');
+                } catch (error) {
+                    console.error('Errore rename:', error);
+                    alert('❌ Errore nel rinominare il dispositivo.\n\nAssicurati che il firmware supporti il comando SET_NAME.');
+                }
+            }
+        };
+        
+        // ==========================================
+        // DISCONNESSIONE
+        // ==========================================
+        
+        document.getElementById('disconnectBtn').onclick = async () => {
+            if (confirm('Disconnettere il dispositivo?')) {
+                try {
+                    if (device && device.gatt.connected) {
+                        await device.gatt.disconnect();
+                    }
+                } catch (error) {
+                    console.error('Errore disconnessione:', error);
+                }
+                
+                // Reset UI
+                device = null;
+                characteristic = null;
+                currentDeviceId = null;
+                
+                statusEl.textContent = 'DISCONNESSO';
+                statusEl.className = 'status disconnected';
+                connectBtn.style.display = 'block';
+                document.getElementById('deviceInfo').style.display = 'none';
+                settingsDiv.style.display = 'none';
+                
+                // Reset tab a Timer
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector('[data-tab="config"]').classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
+                document.getElementById('configTab').style.display = 'block';
+            }
+        };
+        
+        
+        // Salva configurazione
+        saveBtn.onclick = async () => {
+            await sendCommand('SET_BEEP', beepThreshold.value);
+            await sendCommand('SET_SHOT', shotThreshold.value);
+            await sendCommand('SET_TIMER', timerSeconds.value);
+            await sendCommand('SET_MIC', micEnabled.checked ? '1' : '0');
+            await sendCommand('SET_BT', btEnabled.checked ? '1' : '0');
+            await sendCommand('SET_OFFSET', axOffset.value);
+            await sendCommand('SAVE');
+            
+            alert('✅ Configurazione salvata!');
+        };
+        
+        // Factory Reset
+        factoryBtn.onclick = async () => {
+            if (confirm('⚠️ Sei sicuro? Questo resetterà tutte le impostazioni!')) {
+                await sendCommand('FACTORY_RESET');
+                
+                // Reset UI
+                beepThreshold.value = 8000;
+                shotThreshold.value = 12000;
+                timerSeconds.value = 60;
+                axOffset.value = 0;
+                micEnabled.checked = true;
+                btEnabled.checked = true;
+                
+                beepThreshold.oninput();
+                shotThreshold.oninput();
+                timerSeconds.oninput();
+                axOffset.oninput();
+                
+                alert('✅ Factory Reset completato!');
+            }
+        };
+        
+        // Reset offset
+        resetOffset.onclick = () => {
+            axOffset.value = 0;
+            axOffset.oninput();
+        };
+
+        // ==========================================
+        // BRIGHTNESS CONTROL
+        // ==========================================
+        let currentBrightness = 3; // Default: Media
+
+        async function setBrightness(level) {
+            if (!characteristic) {
+                alert('⚠️ Connetti prima il dispositivo!');
+                return;
+            }
+            
+            if (level < 1 || level > 5) return;
+            
+            try {
+                // Invia comando al dispositivo con formato corretto
+                await sendCommand('SET_BRIGHTNESS', level.toString());
+                
+                currentBrightness = level;
+                
+                // Aggiorna UI
+                updateBrightnessUI(level);
+                
+                // Feedback
+                const labels = ['Molto bassa', 'Bassa', 'Media', 'Alta', 'Molto alta'];
+                console.log(`Luminosità impostata: ${labels[level-1]}`);
+                
+            } catch (error) {
+                console.error('Errore impostazione luminosità:', error);
+                alert('❌ Errore nell\'impostazione della luminosità');
+            }
+        }
+
+        function updateBrightnessUI(level) {
+            document.getElementById('brightnessLabel').textContent = level;
+            
+            // Reset stili tutti bottoni
+            document.querySelectorAll('.brightness-btn').forEach(btn => {
+                btn.style.background = '#2a2a2a';
+                btn.style.borderColor = '#555';
+                btn.style.color = '#e0e0e0';
+                btn.classList.remove('active');
+            });
+            
+            // Evidenzia bottone attivo
+            const activeBtn = document.querySelector(`.brightness-btn[data-level="${level}"]`);
+            if (activeBtn) {
+                activeBtn.style.background = '#00ff88';
+                activeBtn.style.borderColor = '#00ff88';
+                activeBtn.style.color = '#1a1a1a';
+                activeBtn.classList.add('active');
+            }
+        }
+
+        // Inizializza UI luminosità
+        window.addEventListener('load', () => {
+            updateBrightnessUI(currentBrightness);
+        });
+
+        // ==========================================
+        // TAB NAVIGATION
+        // ==========================================
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTab = btn.dataset.tab;
+                
+                // Rimuovi active da tutti
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Aggiungi active al selezionato
+                btn.classList.add('active');
+                document.getElementById('tab-' + targetTab).classList.add('active');
+            });
+        });
+
+        // ==========================================
+        // STORAGE LOCALE
+        // ==========================================
+        const Storage = {
+            getProfiles: () => JSON.parse(localStorage.getItem('ballistic_profiles') || '[]'),
+            saveProfiles: (profiles) => localStorage.setItem('ballistic_profiles', JSON.stringify(profiles)),
+            getDrills: () => JSON.parse(localStorage.getItem('range_drills') || '[]'),
+            saveDrills: (drills) => localStorage.setItem('range_drills', JSON.stringify(drills))
+        };
+
+        // ==========================================
+        // CALCOLATORE BALISTICO
+        // ==========================================
+        let currentProfile = null;
+        let profiles = Storage.getProfiles();
+
+        // Carica lista profili
+        function loadProfileList() {
+            const select = document.getElementById('profileSelect');
+            const drillSelect = document.getElementById('drillProfile');
+            
+            select.innerHTML = '<option value="">+ Nuovo Profilo</option>';
+            drillSelect.innerHTML = '<option value="">Nessun profilo</option>';
+            
+            profiles.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.nome}</option>`;
+                drillSelect.innerHTML += `<option value="${p.id}">${p.nome}</option>`;
+            });
+        }
+
+        loadProfileList();
+
+        // Nuovo profilo
+        document.getElementById('newProfileBtn').onclick = () => {
+            currentProfile = {
+                id: 'profile_' + Date.now(),
+                nome: '',
+                unita: 'MIL',
+                clickVerificati: []
+            };
+            document.getElementById('profileEditor').style.display = 'block';
+            document.getElementById('profileName').value = '';
+            document.getElementById('profileUnit').value = 'MIL';
+            renderClickList();
+        };
+
+        // Seleziona profilo esistente
+        document.getElementById('profileSelect').onchange = (e) => {
+            const profileId = e.target.value;
+            if (!profileId) {
+                document.getElementById('profileEditor').style.display = 'none';
+                return;
+            }
+            
+            currentProfile = profiles.find(p => p.id === profileId);
+            if (currentProfile) {
+                document.getElementById('profileEditor').style.display = 'block';
+                document.getElementById('profileName').value = currentProfile.nome;
+                document.getElementById('profileUnit').value = currentProfile.unita;
+                renderClickList();
+            }
+        };
+
+        // Render lista click
+        function renderClickList() {
+            const container = document.getElementById('clickList');
+            if (!currentProfile) return;
+            
+            container.innerHTML = '';
+            currentProfile.clickVerificati.forEach((click, idx) => {
+                container.innerHTML += `
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center;">
+                        <input type="number" placeholder="Distanza (m)" value="${click.distanza}" 
+                               onchange="updateClick(${idx}, 'distanza', this.value)"
+                               style="flex: 1; padding: 8px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 5px;">
+                        <input type="number" step="0.1" placeholder="Alzo" value="${click.alzo}" 
+                               onchange="updateClick(${idx}, 'alzo', this.value)"
+                               style="flex: 1; padding: 8px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 5px;">
+                        <button onclick="removeClick(${idx})" style="padding: 8px 12px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer;">×</button>
+                    </div>
+                `;
+            });
+        }
+
+        // Update click
+        window.updateClick = (idx, field, value) => {
+            if (currentProfile) {
+                currentProfile.clickVerificati[idx][field] = parseFloat(value);
+            }
+        };
+
+        // Remove click
+        window.removeClick = (idx) => {
+            if (currentProfile) {
+                currentProfile.clickVerificati.splice(idx, 1);
+                renderClickList();
+            }
+        };
+
+        // Aggiungi click
+        document.getElementById('addClickBtn').onclick = () => {
+            if (!currentProfile) return;
+            if (currentProfile.clickVerificati.length >= 20) {
+                alert('Massimo 20 click verificati!');
+                return;
+            }
+            currentProfile.clickVerificati.push({distanza: 0, alzo: 0});
+            renderClickList();
+        };
+
+        // Salva profilo
+        document.getElementById('saveProfileBtn').onclick = () => {
+            if (!currentProfile) return;
+            
+            currentProfile.nome = document.getElementById('profileName').value;
+            currentProfile.unita = document.getElementById('profileUnit').value;
+            
+            if (!currentProfile.nome) {
+                alert('Inserisci un nome per il profilo!');
+                return;
+            }
+            
+            if (currentProfile.clickVerificati.length < 3) {
+                alert('Inserisci almeno 3 click verificati!');
+                return;
+            }
+            
+            // Ordina per distanza
+            currentProfile.clickVerificati.sort((a, b) => a.distanza - b.distanza);
+            
+            // Salva o aggiorna
+            const existingIdx = profiles.findIndex(p => p.id === currentProfile.id);
+            if (existingIdx >= 0) {
+                profiles[existingIdx] = currentProfile;
+            } else {
+                profiles.push(currentProfile);
+            }
+            
+            Storage.saveProfiles(profiles);
+            loadProfileList();
+            alert('✅ Profilo salvato!');
+        };
+
+        // Elimina profilo
+        document.getElementById('deleteProfileBtn').onclick = () => {
+            if (!currentProfile) return;
+            if (!confirm('Eliminare questo profilo?')) return;
+            
+            profiles = profiles.filter(p => p.id !== currentProfile.id);
+            Storage.saveProfiles(profiles);
+            loadProfileList();
+            document.getElementById('profileEditor').style.display = 'none';
+            currentProfile = null;
+            alert('🗑️ Profilo eliminato!');
+        };
+
+        // INTERPOLAZIONE LINEARE
+        function interpolateClick(distance, profile) {
+            if (!profile || profile.clickVerificati.length < 2) return null;
+            
+            const points = profile.clickVerificati.sort((a, b) => a.distanza - b.distanza);
+            
+            // Trova i due punti più vicini
+            let before = points[0];
+            let after = points[points.length - 1];
+            
+            for (let i = 0; i < points.length - 1; i++) {
+                if (distance >= points[i].distanza && distance <= points[i + 1].distanza) {
+                    before = points[i];
+                    after = points[i + 1];
+                    break;
+                }
+            }
+            
+            // Interpolazione lineare
+            const ratio = (distance - before.distanza) / (after.distanza - before.distanza);
+            const alzo = before.alzo + ratio * (after.alzo - before.alzo);
+            
+            return {
+                alzo: Math.round(alzo * 10) / 10,
+                unita: profile.unita
+            };
+        }
+
+        // Calcola click
+        document.getElementById('calculateBtn').onclick = () => {
+            const distance = parseFloat(document.getElementById('targetDistance').value);
+            const profileId = document.getElementById('profileSelect').value;
+            
+            if (!profileId) {
+                alert('Seleziona un profilo balistico!');
+                return;
+            }
+            
+            if (!distance || distance <= 0) {
+                alert('Inserisci una distanza valida!');
+                return;
+            }
+            
+            const profile = profiles.find(p => p.id === profileId);
+            const result = interpolateClick(distance, profile);
+            
+            if (result) {
+                document.getElementById('resultU').textContent = result.alzo;
+                document.getElementById('resultUnit').textContent = result.unita;
+                document.getElementById('calcResult').style.display = 'block';
+            } else {
+                alert('Errore nel calcolo!');
+            }
+        };
+
+        console.log('Calcolatore balistico inizializzato!');
+
+        // ==========================================
+        // RANGE CARD BUILDER
+        // ==========================================
+        let currentDrill = {
+            id: null,
+            nome: '',
+            profilo: '',
+            posizioni: []
+        };
+
+        // Aggiungi posizione
+        function setupRangeCardEvents() {
+            const addBtn = document.getElementById('addPositionBtn');
+            const saveBtn = document.getElementById('saveDrillBtn');
+            const previewBtn = document.getElementById('previewDrillBtn');
+            
+            console.log('Setup Range Card eventi:', {addBtn, saveBtn, previewBtn});
+            
+            if (addBtn) {
+                addBtn.onclick = () => {
+                    console.log('Click su Aggiungi Posizione!');
+                    console.log('CurrentDrill prima:', currentDrill);
+                    
+                    const posNum = currentDrill.posizioni.length + 1;
+                    currentDrill.posizioni.push({
+                        nome: `Posizione ${posNum}`,
+                        colpi: []
+                    });
+                    
+                    console.log('CurrentDrill dopo:', currentDrill);
+                    renderPositionsList();
+                };
+            }
+
+            if (saveBtn) {
+                saveBtn.onclick = saveDrillFunction;
+            }
+            
+            if (previewBtn) {
+                previewBtn.onclick = previewDrillFunction;
+            }
+        }
+
+        // Chiama setup dopo che il DOM è pronto
+        setTimeout(setupRangeCardEvents, 500);
+
+        // Reset drill quando cambio tab
+        document.querySelector('[data-tab="rangecard"]').addEventListener('click', () => {
+            console.log('Tab Range Card aperto');
+            // Se non sto modificando un drill esistente, resetta
+            if (!currentDrill.id) {
+                currentDrill = {
+                    id: null,
+                    nome: '',
+                    profilo: '',
+                    posizioni: []
+                };
+                document.getElementById('drillName').value = '';
+                document.getElementById('drillProfile').value = '';
+                renderPositionsList();
+            }
+            // Re-setup eventi per sicurezza
+            setupRangeCardEvents();
+        });
+
+        // Render posizioni
+        function renderPositionsList() {
+            const container = document.getElementById('positionsList');
+            if (!currentDrill || currentDrill.posizioni.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #888;">Nessuna posizione. Clicca "Aggiungi Posizione"</p>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            currentDrill.posizioni.forEach((pos, posIdx) => {
+                const posDiv = document.createElement('div');
+                posDiv.className = 'settings-group';
+                posDiv.style.background = '#1a3a2a';
+                posDiv.style.borderLeft = '4px solid #00ff88';
+                
+                let colpiHTML = '';
+                pos.colpi.forEach((colpo, colpoIdx) => {
+                    colpiHTML += `
+                        <div style="display: grid; grid-template-columns: 40px 1fr 1fr 1fr 40px; gap: 5px; margin-bottom: 8px; align-items: center; padding: 8px; background: #2a2a2a; border-radius: 5px;">
+                            <span style="color: #00ff88; font-weight: bold;">#${colpo.n}</span>
+                            <input type="number" placeholder="Dist (m)" value="${colpo.distanza || ''}" 
+                                   onchange="updateShotDistance(${posIdx}, ${colpoIdx}, this.value)"
+                                   style="padding: 6px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 3px; font-size: 0.9em;">
+                            <input type="number" step="0.1" placeholder="U (auto)" value="${colpo.U || ''}" 
+                                   onchange="updateShot(${posIdx}, ${colpoIdx}, 'U', this.value)"
+                                   style="padding: 6px; background: #1a1a1a; color: #00ff88; border: 1px solid #00ff88; border-radius: 3px; font-size: 0.9em;">
+                            <input type="number" step="0.1" placeholder="W" value="${colpo.W || ''}" 
+                                   onchange="updateShot(${posIdx}, ${colpoIdx}, 'W', this.value)"
+                                   style="padding: 6px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #444; border-radius: 3px; font-size: 0.9em;">
+                            <button onclick="removeShot(${posIdx}, ${colpoIdx})" style="padding: 6px 10px; background: #ff4444; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 0.9em;">×</button>
+                        </div>
+                    `;
+                });
+                
+                posDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <input type="text" value="${pos.nome}" 
+                               onchange="updatePositionName(${posIdx}, this.value)"
+                               style="flex: 1; padding: 8px; background: #1a1a1a; color: #00ff88; border: 1px solid #00ff88; border-radius: 5px; font-weight: bold;">
+                        <button onclick="removePosition(${posIdx})" style="margin-left: 10px; padding: 8px 15px; background: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer;">🗑️</button>
+                    </div>
+                    <div style="font-size: 0.85em; color: #888; margin-bottom: 10px; display: grid; grid-template-columns: 40px 1fr 1fr 1fr 40px; gap: 5px;">
+                        <span></span>
+                        <span>Distanza (m)</span>
+                        <span>U (calcolato)</span>
+                        <span>W (manuale)</span>
+                        <span></span>
+                    </div>
+                    ${colpiHTML}
+                    <button onclick="addShot(${posIdx})" class="btn btn-primary" style="margin-top: 10px; font-size: 0.9em; padding: 8px;">
+                        ➕ Aggiungi Colpo (${pos.colpi.length}/20)
+                    </button>
+                `;
+                
+                container.appendChild(posDiv);
+            });
+        }
+
+        // Update shot distance con calcolo automatico
+        window.updateShotDistance = (posIdx, colpoIdx, distance) => {
+            if (!currentDrill) return;
+            
+            const dist = parseFloat(distance) || 0;
+            currentDrill.posizioni[posIdx].colpi[colpoIdx].distanza = dist;
+            
+            // Calcolo automatico U se c'è un profilo selezionato
+            const profileId = document.getElementById('drillProfile').value;
+            if (profileId && dist > 0) {
+                const profile = profiles.find(p => p.id === profileId);
+                if (profile) {
+                    const result = interpolateClick(dist, profile);
+                    if (result) {
+                        currentDrill.posizioni[posIdx].colpi[colpoIdx].U = result.alzo;
+                        console.log(`Auto-calcolato: ${dist}m → U: ${result.alzo} ${result.unita}`);
+                    }
+                }
+            }
+            
+            renderPositionsList();
+        };
+
+        // Update position name
+        window.updatePositionName = (posIdx, name) => {
+            if (currentDrill) {
+                currentDrill.posizioni[posIdx].nome = name;
+            }
+        };
+
+        // Add shot
+        window.addShot = (posIdx) => {
+            if (!currentDrill) return;
+            const pos = currentDrill.posizioni[posIdx];
+            if (pos.colpi.length >= 20) {
+                alert('Massimo 20 colpi per posizione!');
+                return;
+            }
+            pos.colpi.push({
+                n: pos.colpi.length + 1,
+                distanza: 0,
+                U: 0,
+                W: 0
+            });
+            renderPositionsList();
+        };
+
+        // Update shot
+        window.updateShot = (posIdx, colpoIdx, field, value) => {
+            if (currentDrill) {
+                currentDrill.posizioni[posIdx].colpi[colpoIdx][field] = parseFloat(value) || 0;
+            }
+        };
+
+        // Remove shot
+        window.removeShot = (posIdx, colpoIdx) => {
+            if (currentDrill) {
+                currentDrill.posizioni[posIdx].colpi.splice(colpoIdx, 1);
+                // Rinumera
+                currentDrill.posizioni[posIdx].colpi.forEach((c, i) => c.n = i + 1);
+                renderPositionsList();
+            }
+        };
+
+        // Remove position
+        window.removePosition = (posIdx) => {
+            if (currentDrill && confirm('Eliminare questa posizione?')) {
+                currentDrill.posizioni.splice(posIdx, 1);
+                renderPositionsList();
+            }
+        };
+
+        // Calcolo automatico click per posizione
+        window.autoCalculatePosition = (posIdx) => {
+            if (!currentDrill) return;
+            
+            const profileId = document.getElementById('drillProfile').value;
+            if (!profileId) {
+                alert('Seleziona prima un profilo balistico!');
+                return;
+            }
+            
+            const profile = profiles.find(p => p.id === profileId);
+            if (!profile) return;
+            
+            const pos = currentDrill.posizioni[posIdx];
+            let calculated = 0;
+            
+            pos.colpi.forEach(colpo => {
+                if (colpo.distanza > 0) {
+                    const result = interpolateClick(colpo.distanza, profile);
+                    if (result) {
+                        colpo.U = result.alzo;
+                        calculated++;
+                    }
+                }
+            });
+            
+            renderPositionsList();
+            alert(`✅ Calcolati ${calculated} colpi automaticamente!`);
+        };
+
+        // Salva esercizio
+        document.getElementById('saveDrillBtn').onclick = () => {
+            console.log('Salvando esercizio...', currentDrill);
+            
+            if (!currentDrill || currentDrill.posizioni.length === 0) {
+                alert('Crea prima almeno una posizione!');
+                return;
+            }
+            
+            const nome = document.getElementById('drillName').value.trim();
+            const profilo = document.getElementById('drillProfile').value;
+            
+            if (!nome) {
+                alert('Inserisci un nome per l\'esercizio!');
+                return;
+            }
+            
+            // Aggiorna dati drill
+            currentDrill.nome = nome;
+            currentDrill.profilo = profilo;
+            
+            // Genera ID se nuovo
+            if (!currentDrill.id) {
+                currentDrill.id = 'drill_' + Date.now();
+            }
+            
+            let drills = Storage.getDrills();
+            const existingIdx = drills.findIndex(d => d.id === currentDrill.id);
+            
+            if (existingIdx >= 0) {
+                drills[existingIdx] = currentDrill;
+            } else {
+                drills.push(currentDrill);
+            }
+            
+            console.log('Salvando drills:', drills);
+            Storage.saveDrills(drills);
+            alert('✅ Esercizio salvato!');
+            loadSavedDrills();
+        };
+
+        // Carica esercizi salvati
+        function loadSavedDrills() {
+            const drills = Storage.getDrills();
+            const container = document.getElementById('savedDrillsList');
+            
+            if (drills.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #888;">Nessun esercizio salvato</p>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            drills.forEach(drill => {
+                const drillDiv = document.createElement('div');
+                drillDiv.className = 'settings-group';
+                drillDiv.style.background = '#1a3a2a';
+                
+                const profileName = profiles.find(p => p.id === drill.profilo)?.nome || 'Nessun profilo';
+                const totalShots = drill.posizioni.reduce((sum, pos) => sum + pos.colpi.length, 0);
+                
+                drillDiv.innerHTML = `
+                    <h3 style="color: #00ff88; margin-bottom: 10px;">${drill.nome}</h3>
+                    <p style="color: #aaa; font-size: 0.9em; margin-bottom: 5px;">📊 Profilo: ${profileName}</p>
+                    <p style="color: #aaa; font-size: 0.9em; margin-bottom: 15px;">🎯 ${drill.posizioni.length} posizioni, ${totalShots} colpi</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button onclick="loadDrill('${drill.id}')" class="btn btn-primary" style="font-size: 0.9em;">
+                            ✏️ Modifica
+                        </button>
+                        <button onclick="exportDrillImage('${drill.id}')" class="btn btn-primary" style="background: #9d4edd; font-size: 0.9em;">
+                            📸 Genera PNG
+                        </button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                        <button onclick="exportDrill('${drill.id}')" class="btn btn-primary" style="background: #ff8800; font-size: 0.9em;">
+                            📤 Esporta TXT
+                        </button>
+                        <button onclick="deleteDrill('${drill.id}')" class="btn btn-primary" style="background: #ff4444; font-size: 0.9em;">
+                            🗑️ Elimina
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(drillDiv);
+            });
+        }
+
+        loadSavedDrills();
+
+        // Carica esercizio per modifica
+        window.loadDrill = (drillId) => {
+            const drills = Storage.getDrills();
+            currentDrill = drills.find(d => d.id === drillId);
+            
+            if (currentDrill) {
+                document.getElementById('drillName').value = currentDrill.nome;
+                document.getElementById('drillProfile').value = currentDrill.profilo;
+                renderPositionsList();
+                
+                // Vai al tab range card
+                document.querySelector('[data-tab="rangecard"]').click();
+            }
+        };
+
+        // Elimina esercizio
+        window.deleteDrill = (drillId) => {
+            if (!confirm('Eliminare questo esercizio?')) return;
+            
+            let drills = Storage.getDrills();
+            drills = drills.filter(d => d.id !== drillId);
+            Storage.saveDrills(drills);
+            loadSavedDrills();
+            alert('🗑️ Esercizio eliminato!');
+        };
+
+        console.log('Range Card Builder inizializzato!');
+
+        // ==========================================
+        // GENERAZIONE IMMAGINE PNG per WAVESHARE
+        // ==========================================
+        
+        window.exportDrillImage = (drillId) => {
+            const drills = Storage.getDrills();
+            const drill = drills.find(d => d.id === drillId);
+            if (!drill) return;
+            
+            const profile = profiles.find(p => p.id === drill.profilo);
+            const profileName = profile ? profile.nome : 'Nessun profilo';
+            const unit = profile ? profile.unita : 'MIL';
+            
+            // Chiedi nome file
+            const defaultName = drill.nome.replace(/\s+/g, '_');
+            const fileName = prompt('Nome file PNG:', defaultName);
+            if (!fileName) return; // Annullato
+            
+            // Crea canvas Waveshare 2.7" (264x176 pixel)
+            const canvas = document.createElement('canvas');
+            canvas.width = 264;
+            canvas.height = 176;
+            const ctx = canvas.getContext('2d');
+            
+            // Sfondo bianco
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, 264, 176);
+            
+            // Setup testo nero
+            ctx.fillStyle = '#000000';
+            ctx.textAlign = 'left';
+            
+            let y = 10;
+            
+            // Header
+            ctx.font = 'bold 12px monospace';
+            ctx.fillText('RANGE CARD', 85, y);
+            y += 12;
+            
+            ctx.font = '10px monospace';
+            const titleLines = drill.nome.match(/.{1,30}/g) || [drill.nome];
+            titleLines.forEach(line => {
+                ctx.fillText(line, 5, y);
+                y += 10;
+            });
+            
+            // Linea separatore
+            y += 2;
+            ctx.fillRect(5, y, 254, 1);
+            y += 5;
+            
+            // Info profilo
+            ctx.font = '8px monospace';
+            ctx.fillText(`Profilo: ${profileName.substring(0, 35)}`, 5, y);
+            y += 10;
+            ctx.fillText(`Data: ${new Date().toLocaleDateString('it-IT')}`, 5, y);
+            y += 12;
+            
+            // Posizioni e colpi
+            drill.posizioni.forEach((pos, posIdx) => {
+                if (y > 160) return; // Stop se troppo lungo
+                
+                // Nome posizione
+                ctx.font = 'bold 9px monospace';
+                ctx.fillText(pos.nome.substring(0, 30), 5, y);
+                y += 10;
+                
+                // Colpi
+                ctx.font = '8px monospace';
+                pos.colpi.forEach((colpo, idx) => {
+                    if (y > 165 || idx >= 8) return; // Max 8 colpi per posizione
+                    
+                    const dist = String(colpo.distanza).padStart(4, ' ');
+                    const u = colpo.U.toFixed(1).padStart(4, ' ');
+                    const w = colpo.W.toFixed(1).padStart(4, ' ');
+                    const line = `#${colpo.n} ${dist}m U:${u} W:${w}`;
+                    
+                    ctx.fillText(line, 10, y);
+                    y += 9;
+                });
+                
+                y += 3;
+            });
+            
+            // Footer
+            ctx.font = 'bold 8px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('SHOOTING-LABS', 132, 170);
+            
+            // Converti in PNG e download
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${fileName}.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                alert(`📸 Immagine salvata!\n\nNome: ${fileName}.png\nRisoluzione: 264x176px\n\n✅ Apri con Note o altra app\n✅ Invia a Waveshare e-Paper`);
+            });
+        };
+
+        // ==========================================
+        // EXPORT & BACKUP
+        // ==========================================
+
+        // Export esercizio come PDF/Text
+        window.exportDrill = (drillId) => {
+            const drills = Storage.getDrills();
+            const drill = drills.find(d => d.id === drillId);
+            if (!drill) return;
+            
+            const profile = profiles.find(p => p.id === drill.profilo);
+            const profileName = profile ? profile.nome : 'Nessun profilo';
+            const unit = profile ? profile.unita : 'MIL';
+            
+            // Genera testo range card
+            let text = `═══════════════════════════════════════\n`;
+            text += `    RANGE CARD - ${drill.nome.toUpperCase()}\n`;
+            text += `═══════════════════════════════════════\n`;
+            text += `Profilo: ${profileName}\n`;
+            text += `Unità: ${unit}\n`;
+            text += `Data: ${new Date().toLocaleDateString('it-IT')}\n\n`;
+            
+            drill.posizioni.forEach((pos, idx) => {
+                text += `───────────────────────────────────────\n`;
+                text += `${pos.nome.toUpperCase()}\n`;
+                text += `───────────────────────────────────────\n`;
+                
+                pos.colpi.forEach(colpo => {
+                    const dist = String(colpo.distanza).padStart(4, ' ');
+                    const u = String(colpo.U.toFixed(1)).padStart(5, ' ');
+                    const w = String(colpo.W.toFixed(1)).padStart(5, ' ');
+                    text += `Colpo ${colpo.n}: ${dist}m │ U:${u} ${unit} │ W:${w} ${unit}\n`;
+                });
+                text += `\n`;
+            });
+            
+            text += `═══════════════════════════════════════\n`;
+            text += `         BY SHOOTING-LABS\n`;
+            text += `        shooting-labs.com\n`;
+            text += `═══════════════════════════════════════\n`;
+            
+            // Download come file .txt
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${drill.nome.replace(/\s+/g, '_')}_RangeCard.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('📤 Range Card esportata!\n\nApri il file .txt per stampare o visualizzare su Waveshare e-Paper.');
+        };
+
+        // Anteprima Range Card
+        document.getElementById('previewDrillBtn').onclick = () => {
+            console.log('Anteprima drill:', currentDrill);
+            
+            if (!currentDrill || currentDrill.posizioni.length === 0) {
+                alert('Aggiungi prima almeno una posizione!');
+                return;
+            }
+            
+            const nome = document.getElementById('drillName').value.trim() || 'Nuovo Esercizio';
+            const profileId = document.getElementById('drillProfile').value;
+            const profile = profiles.find(p => p.id === profileId);
+            const profileName = profile ? profile.nome : 'Nessun profilo';
+            
+            let preview = `═══════════════════════════\n`;
+            preview += `RANGE CARD\n`;
+            preview += `${nome.toUpperCase()}\n`;
+            preview += `═══════════════════════════\n`;
+            preview += `Profilo: ${profileName}\n\n`;
+            
+            currentDrill.posizioni.forEach(pos => {
+                preview += `───────────────────────────\n`;
+                preview += `${pos.nome.toUpperCase()}\n`;
+                preview += `───────────────────────────\n`;
+                
+                if (pos.colpi.length === 0) {
+                    preview += `(Nessun colpo)\n\n`;
+                } else {
+                    pos.colpi.forEach(c => {
+                        preview += `#${c.n}: ${c.distanza}m → U:${c.U} W:${c.W}\n`;
+                    });
+                    preview += `\n`;
+                }
+            });
+            
+            alert(preview);
+        };
+
+        // Export backup completo
+        document.getElementById('exportBackupBtn').onclick = () => {
+            const backup = {
+                version: '1.0',
+                date: new Date().toISOString(),
+                profiles: Storage.getProfiles(),
+                drills: Storage.getDrills()
+            };
+            
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ZeroTime_Backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('📤 Backup esportato!');
+        };
+
+        // Import backup
+        document.getElementById('importBackupBtn').onclick = () => {
+            document.getElementById('importFile').click();
+        };
+
+        document.getElementById('importFile').onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const backup = JSON.parse(event.target.result);
+                    
+                    if (!backup.profiles || !backup.drills) {
+                        throw new Error('File backup non valido');
+                    }
+                    
+                    if (confirm('⚠️ Importare il backup? Questo sovrascriverà tutti i dati attuali!')) {
+                        Storage.saveProfiles(backup.profiles);
+                        Storage.saveDrills(backup.drills);
+                        
+                        profiles = backup.profiles;
+                        loadProfileList();
+                        loadSavedDrills();
+                        
+                        alert('✅ Backup importato con successo!');
+                    }
+                } catch (error) {
+                    alert('❌ Errore: File backup non valido!');
+                    console.error(error);
+                }
+            };
+            reader.readAsText(file);
+        };
+
+        console.log('Export & Backup inizializzato!');
+        console.log('🎯 ZERO TIME - Sistema completo operativo!');
+    </script>
+</body>
+</html>
