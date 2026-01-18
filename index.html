@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZERO TIME - Auto-Learning</title>
+    <meta name="description" content="Sistema di auto-learning intelligente per ZERO TIME">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a1a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 120px;
+            height: auto;
+            margin: 0 auto 15px;
+            display: block;
+        }
+        
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00ff88, #00aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .status.disconnected {
+            background: #3a1a1a;
+            color: #ff6666;
+        }
+        
+        .status.connected {
+            background: #1a3a1a;
+            color: #00ff88;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00ff88, #00aaff);
+            color: #1a1a1a;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .device-info {
+            background: #333;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .section {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .section h2 {
+            color: #00ff88;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .learn-btn {
+            background: linear-gradient(135deg, #00aaff, #0088ff);
+            color: white;
+            font-size: 1.1em;
+            padding: 20px;
+        }
+        
+        .learn-btn.learning {
+            background: linear-gradient(135deg, #ff8800, #ff6600);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .learn-btn.success {
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .visualizer {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+        
+        .visualizer.active {
+            display: block;
+        }
+        
+        canvas {
+            width: 100%;
+            height: 150px;
+            border-radius: 8px;
+        }
+        
+        .audio-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .stat-item {
+            background: #333;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            color: #888;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            color: #00ff88;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        .info-box {
+            background: #2a3a2a;
+            border-left: 4px solid #00ff88;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .info-box strong {
+            color: #00ff88;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .pattern-display {
+            background: #1a2a1a;
+            border: 2px solid #00ff88;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .pattern-display.active {
+            display: block;
+        }
+        
+        .pattern-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #333;
+        }
+        
+        .pattern-item:last-child {
+            border-bottom: none;
+        }
+        
+        .pattern-label {
+            color: #888;
+        }
+        
+        .pattern-value {
+            color: #00ff88;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <img src="./shooting-labs-logo.jpg" alt="Shooting Labs" class="logo">
+            <h1>ZERO TIME</h1>
+            <p class="subtitle">Auto-Learning con Microfono Cellulare</p>
+        </div>
+        
+        <!-- Status -->
+        <div id="status" class="status disconnected">DISCONNESSO</div>
+        
+        <!-- Connect Button -->
+        <button id="connectBtn" class="btn btn-primary">🔗 Connetti ZERO TIME</button>
+        
+        <!-- Device Info -->
+        <div id="deviceInfo" class="device-info" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong style="color: #00ff88;">Dispositivo:</strong>
+                    <div id="deviceName" style="margin-top: 5px;">ZEROTIME</div>
+                </div>
+                <button id="disconnectBtn" class="btn btn-primary" style="width: auto; padding: 10px 20px; font-size: 0.9em; background: #ff4444;">🔌 Disconnetti</button>
+            </div>
+        </div>
+        
+        <!-- Learning Section -->
+        <div id="learningSection" style="display: none;">
+            <div class="section">
+                <h2>🧠 Auto-Learning Intelligente</h2>
+                <p style="color: #888; margin-bottom: 20px;">
+                    Usa il microfono del cellulare per analisi audio precisa
+                </p>
+                
+                <!-- Learn BEEP -->
+                <button id="learnBeepBtn" class="btn learn-btn">
+                    🎵 Impara BEEP START
+                </button>
+                
+                <!-- Visualizer BEEP -->
+                <div id="beepVisualizer" class="visualizer">
+                    <canvas id="beepCanvas"></canvas>
+                    <div class="audio-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Frequenza</div>
+                            <div class="stat-value" id="beepFreq">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Ampiezza</div>
+                            <div class="stat-value" id="beepAmp">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Durata</div>
+                            <div class="stat-value" id="beepDur">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Status</div>
+                            <div class="stat-value" id="beepStatus">In ascolto...</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pattern BEEP Display -->
+                <div id="beepPattern" class="pattern-display">
+                    <strong style="color: #00ff88;">✅ BEEP Pattern Salvato</strong>
+                    <div class="pattern-item">
+                        <span class="pattern-label">Frequenza:</span>
+                        <span class="pattern-value" id="beepPatternFreq">-</span>
+                    </div>
+                    <div class="pattern-item">
+                        <span class="pattern-label">Durata:</span>
+                        <span class="pattern-value" id="beepPatternDur">-</span>
+                    </div>
+                    <div class="pattern-item">
+                        <span class="pattern-label">Ampiezza:</span>
+                        <span class="pattern-value" id="beepPatternAmp">-</span>
+                    </div>
+                </div>
+                
+                <div style="height: 20px;"></div>
+                
+                <!-- Learn SHOT -->
+                <button id="learnShotBtn" class="btn learn-btn">
+                    🔫 Impara COLPO
+                </button>
+                
+                <!-- Visualizer SHOT -->
+                <div id="shotVisualizer" class="visualizer">
+                    <canvas id="shotCanvas"></canvas>
+                    <div class="audio-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Frequenza</div>
+                            <div class="stat-value" id="shotFreq">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Ampiezza</div>
+                            <div class="stat-value" id="shotAmp">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Durata</div>
+                            <div class="stat-value" id="shotDur">-</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Status</div>
+                            <div class="stat-value" id="shotStatus">In ascolto...</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pattern SHOT Display -->
+                <div id="shotPattern" class="pattern-display">
+                    <strong style="color: #00ff88;">✅ COLPO Pattern Salvato</strong>
+                    <div class="pattern-item">
+                        <span class="pattern-label">Frequenza:</span>
+                        <span class="pattern-value" id="shotPatternFreq">-</span>
+                    </div>
+                    <div class="pattern-item">
+                        <span class="pattern-label">Durata:</span>
+                        <span class="pattern-value" id="shotPatternDur">-</span>
+                    </div>
+                    <div class="pattern-item">
+                        <span class="pattern-label">Ampiezza:</span>
+                        <span class="pattern-value" id="shotPatternAmp">-</span>
+                    </div>
+                </div>
+                
+                <!-- Info Box -->
+                <div class="info-box">
+                    <strong>ℹ️ Come funziona:</strong>
+                    <ol style="margin: 10px 0 0 20px; color: #ccc;">
+                        <li>Click "Impara BEEP START"</li>
+                        <li>Fai partire il timer entro 10 secondi</li>
+                        <li>Il cellulare analizza l'audio e invia i dati</li>
+                        <li>Ripeti per "Impara COLPO"</li>
+                        <li>✅ ZERO TIME riconoscerà automaticamente!</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // BLUETOOTH CONFIGURATION
+        // ==========================================
+        const SERVICE_UUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';  // Nordic UART
+        const CHAR_UUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';     // TX
+        
+        let device = null;
+        let characteristic = null;
+        let audioContext = null;
+        let analyser = null;
+        let microphone = null;
+        let currentLearningMode = null;  // 'beep' or 'shot'
+        
+        // DOM Elements
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const statusEl = document.getElementById('status');
+        const deviceInfo = document.getElementById('deviceInfo');
+        const learningSection = document.getElementById('learningSection');
+        const learnBeepBtn = document.getElementById('learnBeepBtn');
+        const learnShotBtn = document.getElementById('learnShotBtn');
+        
+        // ==========================================
+        // BLUETOOTH CONNECTION
+        // ==========================================
+        connectBtn.onclick = async () => {
+            try {
+                device = await navigator.bluetooth.requestDevice({
+                    filters: [{ services: [SERVICE_UUID] }],
+                    optionalServices: [SERVICE_UUID]
+                });
+                
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService(SERVICE_UUID);
+                characteristic = await service.getCharacteristic(CHAR_UUID);
+                
+                // Update UI
+                statusEl.textContent = 'CONNESSO';
+                statusEl.className = 'status connected';
+                connectBtn.style.display = 'none';
+                deviceInfo.style.display = 'block';
+                learningSection.style.display = 'block';
+                document.getElementById('deviceName').textContent = device.name;
+                
+                console.log('✅ Connesso a', device.name);
+                
+            } catch (error) {
+                console.error('Errore connessione:', error);
+                alert('❌ Errore di connessione: ' + error.message);
+            }
+        };
+        
+        disconnectBtn.onclick = () => {
+            if (device && device.gatt.connected) {
+                device.gatt.disconnect();
+            }
+            stopAudioAnalysis();
+            resetUI();
+        };
+        
+        function resetUI() {
+            statusEl.textContent = 'DISCONNESSO';
+            statusEl.className = 'status disconnected';
+            connectBtn.style.display = 'block';
+            deviceInfo.style.display = 'none';
+            learningSection.style.display = 'none';
+            device = null;
+            characteristic = null;
+        }
+        
+        // ==========================================
+        // AUDIO ANALYSIS
+        // ==========================================
+        async function startAudioAnalysis(mode) {
+            currentLearningMode = mode;
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(stream);
+                
+                analyser.fftSize = 2048;
+                microphone.connect(analyser);
+                
+                console.log('✅ Microfono attivato');
+                
+                if (mode === 'beep') {
+                    document.getElementById('beepVisualizer').classList.add('active');
+                    detectSound('beep');
+                } else {
+                    document.getElementById('shotVisualizer').classList.add('active');
+                    detectSound('shot');
+                }
+                
+            } catch (error) {
+                console.error('Errore microfono:', error);
+                alert('❌ Impossibile accedere al microfono: ' + error.message);
+                resetLearningButton(mode);
+            }
+        }
+        
+        function stopAudioAnalysis() {
+            if (microphone && microphone.mediaStream) {
+                microphone.mediaStream.getTracks().forEach(track => track.stop());
+            }
+            if (audioContext) {
+                audioContext.close();
+            }
+            microphone = null;
+            audioContext = null;
+            analyser = null;
+            currentLearningMode = null;
+        }
+        
+        // ==========================================
+        // SOUND DETECTION
+        // ==========================================
+        function detectSound(mode) {
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            const timeArray = new Uint8Array(bufferLength);
+            
+            const canvas = mode === 'beep' ? document.getElementById('beepCanvas') : document.getElementById('shotCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 150;
+            
+            let detecting = false;
+            let detectionStart = 0;
+            let maxAmplitude = 0;
+            let dominantFrequency = 0;
+            const THRESHOLD = 30;  // Soglia rilevamento (su scala 0-255)
+            const MIN_DURATION = 30;  // Durata minima (ms)
+            
+            function analyze() {
+                if (!analyser) return;
+                
+                requestAnimationFrame(analyze);
+                
+                // Get frequency and time data
+                analyser.getByteFrequencyData(dataArray);
+                analyser.getByteTimeDomainData(timeArray);
+                
+                // Calculate amplitude
+                let sum = 0;
+                let max = 0;
+                for (let i = 0; i < bufferLength; i++) {
+                    sum += dataArray[i];
+                    if (dataArray[i] > max) max = dataArray[i];
+                }
+                const avgAmplitude = sum / bufferLength;
+                
+                // Update visualizer
+                drawWaveform(ctx, canvas, timeArray);
+                
+                // Update stats
+                const freqEl = document.getElementById(mode + 'Freq');
+                const ampEl = document.getElementById(mode + 'Amp');
+                const statusEl = document.getElementById(mode + 'Status');
+                
+                if (freqEl) freqEl.textContent = Math.round(dominantFrequency) + ' Hz';
+                if (ampEl) ampEl.textContent = Math.round(avgAmplitude);
+                
+                // Detection logic
+                if (avgAmplitude > THRESHOLD) {
+                    if (!detecting) {
+                        // Start detection
+                        detecting = true;
+                        detectionStart = Date.now();
+                        maxAmplitude = avgAmplitude;
+                        dominantFrequency = getDominantFrequency(dataArray, audioContext.sampleRate);
+                        if (statusEl) statusEl.textContent = '🔊 Rilevato!';
+                        console.log('🔊 Suono rilevato! Amp:', avgAmplitude, 'Freq:', dominantFrequency);
+                    } else {
+                        // Update max values
+                        if (avgAmplitude > maxAmplitude) {
+                            maxAmplitude = avgAmplitude;
+                        }
+                        const currentFreq = getDominantFrequency(dataArray, audioContext.sampleRate);
+                        if (currentFreq > 0) {
+                            dominantFrequency = currentFreq;
+                        }
+                    }
+                } else {
+                    if (detecting) {
+                        // Sound finished
+                        const duration = Date.now() - detectionStart;
+                        
+                        if (duration >= MIN_DURATION) {
+                            console.log('✅ Suono completato:', {
+                                duration: duration,
+                                freq: dominantFrequency,
+                                amp: maxAmplitude
+                            });
+                            
+                            if (statusEl) statusEl.textContent = '✅ Analizzato!';
+                            
+                            // Send to XIAO
+                            sendPattern(mode, dominantFrequency, duration, maxAmplitude);
+                            
+                            // Stop analysis
+                            stopAudioAnalysis();
+                            showPattern(mode, dominantFrequency, duration, maxAmplitude);
+                        }
+                        
+                        detecting = false;
+                    }
+                }
+            }
+            
+            analyze();
+        }
+        
+        function getDominantFrequency(dataArray, sampleRate) {
+            let maxValue = 0;
+            let maxIndex = 0;
+            
+            // Find peak in frequency data
+            for (let i = 0; i < dataArray.length; i++) {
+                if (dataArray[i] > maxValue) {
+                    maxValue = dataArray[i];
+                    maxIndex = i;
+                }
+            }
+            
+            // Convert bin to frequency
+            const nyquist = sampleRate / 2;
+            const frequency = (maxIndex * nyquist) / dataArray.length;
+            
+            return frequency;
+        }
+        
+        function drawWaveform(ctx, canvas, dataArray) {
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#00ff88';
+            ctx.beginPath();
+            
+            const sliceWidth = canvas.width / dataArray.length;
+            let x = 0;
+            
+            for (let i = 0; i < dataArray.length; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = (v * canvas.height) / 2;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+                
+                x += sliceWidth;
+            }
+            
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+        }
+        
+        // ==========================================
+        // SEND PATTERN TO XIAO
+        // ==========================================
+        async function sendPattern(mode, frequency, duration, amplitude) {
+            if (!characteristic) {
+                alert('❌ Dispositivo non connesso!');
+                return;
+            }
+            
+            try {
+                // Format: SAVE_BEEP_PATTERN:freq:duration:amplitude
+                // or SAVE_SHOT_PATTERN:freq:duration:amplitude
+                const command = mode === 'beep' ? 'SAVE_BEEP_PATTERN' : 'SAVE_SHOT_PATTERN';
+                const data = `${command}:${Math.round(frequency)}:${duration}:${Math.round(amplitude)}`;
+                
+                const encoder = new TextEncoder();
+                await characteristic.writeValue(encoder.encode(data));
+                
+                console.log('📤 Pattern inviato:', data);
+                
+            } catch (error) {
+                console.error('Errore invio pattern:', error);
+                alert('❌ Errore nell\'invio del pattern');
+            }
+        }
+        
+        // ==========================================
+        // UI UPDATES
+        // ==========================================
+        function showPattern(mode, frequency, duration, amplitude) {
+            const patternDiv = document.getElementById(mode + 'Pattern');
+            const freqEl = document.getElementById(mode + 'PatternFreq');
+            const durEl = document.getElementById(mode + 'PatternDur');
+            const ampEl = document.getElementById(mode + 'PatternAmp');
+            
+            if (freqEl) freqEl.textContent = Math.round(frequency) + ' Hz';
+            if (durEl) durEl.textContent = duration + ' ms';
+            if (ampEl) ampEl.textContent = Math.round(amplitude);
+            if (patternDiv) patternDiv.classList.add('active');
+            
+            // Update button
+            const btn = mode === 'beep' ? learnBeepBtn : learnShotBtn;
+            btn.textContent = mode === 'beep' ? '✅ BEEP Configurato' : '✅ COLPO Configurato';
+            btn.classList.remove('learning');
+            btn.classList.add('success');
+            btn.disabled = false;
+            
+            // Hide visualizer
+            document.getElementById(mode + 'Visualizer').classList.remove('active');
+            
+            setTimeout(() => {
+                btn.textContent = mode === 'beep' ? '🎵 Impara BEEP START' : '🔫 Impara COLPO';
+                btn.classList.remove('success');
+            }, 3000);
+        }
+        
+        function resetLearningButton(mode) {
+            const btn = mode === 'beep' ? learnBeepBtn : learnShotBtn;
+            btn.textContent = mode === 'beep' ? '🎵 Impara BEEP START' : '🔫 Impara COLPO';
+            btn.classList.remove('learning');
+            btn.disabled = false;
+            document.getElementById(mode + 'Visualizer').classList.remove('active');
+        }
+        
+        // ==========================================
+        // LEARNING BUTTONS
+        // ==========================================
+        learnBeepBtn.onclick = async () => {
+            if (!characteristic) {
+                alert('⚠️ Connetti prima il dispositivo!');
+                return;
+            }
+            
+            learnBeepBtn.textContent = '⏳ Fai partire il timer...';
+            learnBeepBtn.classList.add('learning');
+            learnBeepBtn.disabled = true;
+            
+            await startAudioAnalysis('beep');
+            
+            // Timeout 10 secondi
+            setTimeout(() => {
+                if (currentLearningMode === 'beep') {
+                    stopAudioAnalysis();
+                    resetLearningButton('beep');
+                    alert('⏱️ Timeout - Riprova');
+                }
+            }, 10000);
+        };
+        
+        learnShotBtn.onclick = async () => {
+            if (!characteristic) {
+                alert('⚠️ Connetti prima il dispositivo!');
+                return;
+            }
+            
+            learnShotBtn.textContent = '⏳ Effettua un colpo...';
+            learnShotBtn.classList.add('learning');
+            learnShotBtn.disabled = true;
+            
+            await startAudioAnalysis('shot');
+            
+            // Timeout 10 secondi
+            setTimeout(() => {
+                if (currentLearningMode === 'shot') {
+                    stopAudioAnalysis();
+                    resetLearningButton('shot');
+                    alert('⏱️ Timeout - Riprova');
+                }
+            }, 10000);
+        };
+        
+        // ==========================================
+        // BROWSER COMPATIBILITY CHECK
+        // ==========================================
+        window.addEventListener('load', () => {
+            if (!navigator.bluetooth) {
+                const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                
+                let msg = '⚠️ Web Bluetooth non supportato!\n\n';
+                
+                if (isSafari || isIOS) {
+                    msg += 'Su Safari/iOS usa:\n';
+                    msg += '1. App "Bluefy" (App Store)\n';
+                    msg += '2. Oppure usa Chrome/Edge su Android/PC';
+                    alert(msg);
+                } else {
+                    msg += 'Usa Chrome, Edge o Opera.';
+                    alert(msg);
+                }
+                
+                connectBtn.disabled = true;
+                connectBtn.textContent = '❌ Browser non compatibile';
+                connectBtn.style.background = '#ff4444';
+            }
+            
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('⚠️ Microfono non supportato in questo browser!');
+            }
+        });
+    </script>
+</body>
+</html>
