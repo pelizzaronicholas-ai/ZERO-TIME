@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Tab Switching</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+        }
+        
+        .tab-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab-btn {
+            padding: 15px 30px;
+            background: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+        
+        .tab-btn.active {
+            background: #00ff88;
+            color: black;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 8px;
+            min-height: 300px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Tab Switching</h1>
+    
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="timer">⏱️ Timer</button>
+        <button class="tab-btn" data-tab="calc">🎯 Calcolatore</button>
+        <button class="tab-btn" data-tab="range">📝 Range Card</button>
+        <button class="tab-btn" data-tab="saved">📚 Salvati</button>
+    </div>
+    
+    <div class="tab-content active" id="tab-timer">
+        <h2>TAB TIMER</h2>
+        <p>Contenuto Timer</p>
+        <p>Auto-Learning</p>
+        <p>Funzioni</p>
+        <p>Luminosità</p>
+        <p>Display bolla livella</p>
+        <p>Azioni</p>
+    </div>
+    
+    <div class="tab-content" id="tab-calc">
+        <h2>TAB CALCOLATORE</h2>
+        <p>Profili Balistici</p>
+        <p>Calcolo Click</p>
+    </div>
+    
+    <div class="tab-content" id="tab-range">
+        <h2>TAB RANGE CARD</h2>
+        <p>Builder Range Card</p>
+    </div>
+    
+    <div class="tab-content" id="tab-saved">
+        <h2>TAB SALVATI</h2>
+        <p>Esercizi Salvati</p>
+        <p>Backup & Restore</p>
+    </div>
+    
+    <script>
+        console.log('🔍 Script iniziato');
+        
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        console.log('Tab buttons trovati:', tabBtns.length);
+        console.log('Tab contents trovati:', tabContents.length);
+        
+        tabBtns.forEach((btn, index) => {
+            console.log(`Button ${index}:`, btn.dataset.tab);
+            
+            btn.addEventListener('click', () => {
+                const targetTab = btn.dataset.tab;
+                console.log('🔘 Click su tab:', targetTab);
+                
+                // Rimuovi active da tutti
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Aggiungi active al selezionato
+                btn.classList.add('active');
+                const targetElement = document.getElementById('tab-' + targetTab);
+                if (targetElement) {
+                    targetElement.classList.add('active');
+                    console.log('✅ Tab attivato:', targetTab);
+                } else {
+                    console.error('❌ Elemento non trovato: tab-' + targetTab);
+                }
+            });
+        });
+        
+        console.log('✅ Script completato');
+    </script>
+</body>
+</html>
