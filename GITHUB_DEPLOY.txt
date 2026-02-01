@@ -1,0 +1,101 @@
+╔══════════════════════════════════════════════════════════════╗
+║         ZERO TIME 2.0 - GITHUB DEPLOY VELOCE                 ║
+╚══════════════════════════════════════════════════════════════╝
+
+🔄 COMUNICAZIONE OTTIMIZZATA: PROBLEMA RISOLTO!
+   Device non si blocca più → Solo invio comandi (no ricezione)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📦 COSA HAI:
+
+  7 FILE DA CARICARE:
+  • index.html           (Comunicazione one-way)
+  • manifest.json        (PWA)
+  • service-worker.js    (Offline)
+  • zero-time-icon.png   (Header)
+  • shooting-labs.jpg    (Footer)
+  • icon-192.png         (PWA small)
+  • icon-512.png         (PWA large)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 DEPLOY SU GITHUB (3 PASSI):
+
+  1️⃣ CREA REPO
+     • Vai su github.com
+     • New repository → Nome: zero-time
+     • Public ✅
+     • NO README
+
+  2️⃣ UPLOAD FILES
+     • Click "uploading an existing file"
+     • Drag & drop i 7 file
+     • Commit: "ZERO TIME 2.0"
+
+  3️⃣ ATTIVA PAGES
+     • Settings → Pages
+     • Source: main branch → Save
+     • URL: username.github.io/zero-time
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ COSA È MIGLIORATO:
+
+  PRIMA:
+  ❌ Device si bloccava con troppi dati in ricezione
+  ❌ Richieste GET continue
+  ❌ Attesa risposte dal device
+
+  ADESSO:
+  ✅ Solo invio comandi (one-way)
+  ✅ Pause 50ms tra comandi
+  ✅ Tutto salvato in localStorage
+  ✅ Device non si blocca più!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📱 COME USA L'APP:
+
+  OFFLINE (senza BT):
+  → Apri app
+  → Usa Calcolatore/Range Card
+  → Tutto funziona! ✅
+
+  ONLINE (con BT):
+  → Apri app
+  → Modifica impostazioni
+  → Connetti ZERO TIME
+  → Salva → Comandi inviati con pause
+  → Device aggiornato! ✅
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 COMANDI INVIATI (Esempio):
+
+  SET_BEEP:8000
+  [pausa 50ms]
+  SET_SHOT:12000
+  [pausa 50ms]
+  SET_TIMER:60
+  [pausa 50ms]
+  SAVE
+
+  Nessuna risposta attesa!
+  Device processa uno alla volta → No sovraccarico ✅
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 IMPORTANTE:
+
+  • App salva TUTTO in localStorage
+  • Device riceve solo quando click "Salva"
+  • Pause automatiche tra comandi
+  • Niente GET dal device
+  • Funziona sempre, anche offline
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ FATTO! CARICA I 7 FILE SU GITHUB! 🎯
+
+Per dettagli: leggi README_GITHUB.md

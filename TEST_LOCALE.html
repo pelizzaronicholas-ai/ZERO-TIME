@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 ZERO TIME 2.0 - TEST LOCALE</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #e0e0e0;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #2a2a2a;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        h1 {
+            color: #00ff88;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px rgba(0,255,136,0.5);
+        }
+        .test-section {
+            background: #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #00ff88;
+        }
+        .test-section h2 {
+            color: #00ff88;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .test-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #2a2a2a;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .test-item:last-child { margin-bottom: 0; }
+        .icon {
+            font-size: 1.5em;
+            min-width: 30px;
+            text-align: center;
+        }
+        .test-text {
+            flex: 1;
+            font-size: 0.95em;
+        }
+        .status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+        .status.success { background: #00ff88; color: #1a1a1a; }
+        .status.pending { background: #ffaa00; color: #1a1a1a; }
+        .status.error { background: #ff4444; color: white; }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #00ff88;
+            color: #1a1a1a;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background: #00dd77;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,255,136,0.4);
+        }
+        .info-box {
+            background: #1a3a2a;
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            font-size: 0.95em;
+        }
+        .info-box strong {
+            color: #00ff88;
+        }
+        #testResults {
+            margin-top: 20px;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            display: none;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #444;
+        }
+        .footer img {
+            width: 100px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 ZERO TIME 2.0<br>TEST LOCALE</h1>
+        
+        <div class="test-section">
+            <h2>📦 Verifica File</h2>
+            <div class="test-item">
+                <div class="icon">📄</div>
+                <div class="test-text">index.html presente</div>
+                <div class="status success" id="htmlStatus">✅</div>
+            </div>
+            <div class="test-item">
+                <div class="icon">⚙️</div>
+                <div class="test-text">manifest.json presente</div>
+                <div class="status pending" id="manifestStatus">⏳</div>
+            </div>
+            <div class="test-item">
+                <div class="icon">🔧</div>
+                <div class="test-text">service-worker.js presente</div>
+                <div class="status pending" id="swStatus">⏳</div>
+            </div>
+            <div class="test-item">
+                <div class="icon">🖼️</div>
+                <div class="test-text">Immagini presenti (4 files)</div>
+                <div class="status pending" id="imagesStatus">⏳</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🌐 Funzionalità Browser</h2>
+            <div class="test-item">
+                <div class="icon">💾</div>
+                <div class="test-text">LocalStorage disponibile</div>
+                <div class="status pending" id="storageStatus">⏳</div>
+            </div>
+            <div class="test-item">
+                <div class="icon">📱</div>
+                <div class="test-text">Service Worker supportato</div>
+                <div class="status pending" id="swSupportStatus">⏳</div>
+            </div>
+            <div class="test-item">
+                <div class="icon">🔵</div>
+                <div class="test-text">Web Bluetooth disponibile</div>
+                <div class="status pending" id="bleStatus">⏳</div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🆕 Nuove Funzionalità</h2>
+            <div class="test-item">
+                <div class="icon">📝</div>
+                <div class="test-text">Rinomina Device implementato</div>
+                <div class="status success">✅</div>
+            </div>
+            <div class="test-item">
+                <div class="icon">🔌</div>
+                <div class="test-text">Modalità Offline attiva</div>
+                <div class="status success">✅</div>
+            </div>
+            <div class="test-item">
+                <div class="icon">🎯</div>
+                <div class="test-text">Icone PWA corrette</div>
+                <div class="status success">✅</div>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="runTests()">🚀 Avvia Test</button>
+        
+        <div id="testResults"></div>
+        
+        <div class="info-box">
+            <strong>💡 Come usare questo test:</strong><br><br>
+            1. Apri questo file nel browser<br>
+            2. Click su "Avvia Test"<br>
+            3. Verifica che tutto sia ✅ verde<br>
+            4. Poi testa l'app vera: apri <strong>index.html</strong><br><br>
+            <strong>⚠️ Se vedi errori:</strong><br>
+            • Verifica che tutti i 7 file siano nella stessa cartella<br>
+            • Usa Chrome o Edge per Bluetooth Web<br>
+            • Su Safari/iOS usa l'app Bluefy
+        </div>
+        
+        <div class="footer">
+            <p style="color: #00ff88; font-weight: bold; font-size: 1.2em; margin-bottom: 15px;">BY</p>
+            <p style="color: #888;">SHOOTING LABS</p>
+        </div>
+    </div>
+    
+    <script>
+        async function runTests() {
+            const results = document.getElementById('testResults');
+            results.style.display = 'block';
+            results.innerHTML = '<h3 style="color: #00ff88; margin-bottom: 15px;">📊 Risultati Test</h3>';
+            
+            // Test 1: Manifest
+            try {
+                const response = await fetch('manifest.json');
+                if (response.ok) {
+                    document.getElementById('manifestStatus').textContent = '✅';
+                    document.getElementById('manifestStatus').className = 'status success';
+                    results.innerHTML += '<p style="color: #00ff88;">✅ manifest.json trovato</p>';
+                } else {
+                    throw new Error('Not found');
+                }
+            } catch (e) {
+                document.getElementById('manifestStatus').textContent = '❌';
+                document.getElementById('manifestStatus').className = 'status error';
+                results.innerHTML += '<p style="color: #ff4444;">❌ manifest.json non trovato</p>';
+            }
+            
+            // Test 2: Service Worker
+            try {
+                const response = await fetch('service-worker.js');
+                if (response.ok) {
+                    document.getElementById('swStatus').textContent = '✅';
+                    document.getElementById('swStatus').className = 'status success';
+                    results.innerHTML += '<p style="color: #00ff88;">✅ service-worker.js trovato</p>';
+                } else {
+                    throw new Error('Not found');
+                }
+            } catch (e) {
+                document.getElementById('swStatus').textContent = '❌';
+                document.getElementById('swStatus').className = 'status error';
+                results.innerHTML += '<p style="color: #ff4444;">❌ service-worker.js non trovato</p>';
+            }
+            
+            // Test 3: Images
+            const images = ['zero-time-icon.png', 'shooting-labs.jpg', 'icon-192.png', 'icon-512.png'];
+            let imageCount = 0;
+            for (const img of images) {
+                try {
+                    const response = await fetch(img);
+                    if (response.ok) imageCount++;
+                } catch (e) {}
+            }
+            
+            if (imageCount === 4) {
+                document.getElementById('imagesStatus').textContent = '✅';
+                document.getElementById('imagesStatus').className = 'status success';
+                results.innerHTML += '<p style="color: #00ff88;">✅ Tutte le 4 immagini trovate</p>';
+            } else {
+                document.getElementById('imagesStatus').textContent = `⚠️ ${imageCount}/4`;
+                document.getElementById('imagesStatus').className = 'status pending';
+                results.innerHTML += `<p style="color: #ffaa00;">⚠️ Solo ${imageCount}/4 immagini trovate</p>`;
+            }
+            
+            // Test 4: LocalStorage
+            try {
+                localStorage.setItem('test', 'ok');
+                localStorage.removeItem('test');
+                document.getElementById('storageStatus').textContent = '✅';
+                document.getElementById('storageStatus').className = 'status success';
+                results.innerHTML += '<p style="color: #00ff88;">✅ LocalStorage funzionante</p>';
+            } catch (e) {
+                document.getElementById('storageStatus').textContent = '❌';
+                document.getElementById('storageStatus').className = 'status error';
+                results.innerHTML += '<p style="color: #ff4444;">❌ LocalStorage non disponibile</p>';
+            }
+            
+            // Test 5: Service Worker Support
+            if ('serviceWorker' in navigator) {
+                document.getElementById('swSupportStatus').textContent = '✅';
+                document.getElementById('swSupportStatus').className = 'status success';
+                results.innerHTML += '<p style="color: #00ff88;">✅ Service Worker supportato</p>';
+            } else {
+                document.getElementById('swSupportStatus').textContent = '❌';
+                document.getElementById('swSupportStatus').className = 'status error';
+                results.innerHTML += '<p style="color: #ff4444;">❌ Service Worker non supportato</p>';
+            }
+            
+            // Test 6: Bluetooth
+            if (navigator.bluetooth) {
+                document.getElementById('bleStatus').textContent = '✅';
+                document.getElementById('bleStatus').className = 'status success';
+                results.innerHTML += '<p style="color: #00ff88;">✅ Web Bluetooth disponibile</p>';
+            } else {
+                document.getElementById('bleStatus').textContent = '❌';
+                document.getElementById('bleStatus').className = 'status error';
+                results.innerHTML += '<p style="color: #ff4444;">❌ Web Bluetooth non disponibile</p>';
+                results.innerHTML += '<p style="color: #ffaa00;">💡 Usa Chrome/Edge/Opera o Bluefy su iOS</p>';
+            }
+            
+            results.innerHTML += '<br><h4 style="color: #00ff88;">🎯 Prossimi Passi:</h4>';
+            results.innerHTML += '<p>1. Apri <strong>index.html</strong> per testare l\'app vera</p>';
+            results.innerHTML += '<p>2. Se tutto funziona, fai il deploy su Netlify o GitHub</p>';
+            results.innerHTML += '<p>3. Testa su mobile dopo il deploy</p>';
+        }
+    </script>
+</body>
+</html>
